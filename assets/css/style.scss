@@ -138,53 +138,6 @@ main {
 	}
 }
 
-// footer {
-// 	background: rgba(0, 0, 0, 0.4);
-// 	backdrop-filter: blur(4rem);
-// 	-webkit-backdrop-filter: blur(4rem); // safari support
-
-// 	color: var(--text-inactive);
-// 	font-size: 0.875rem;
-
-// 	display: grid;
-// 	grid-template-columns: repeat(3, 1fr);
-// 	gap: 1rem;
-// 	padding: 1rem;
-
-// 	position: fixed;
-// 	left: 0;
-// 	bottom: 0;
-// 	width: 100%;
-
-// 	.footer-tab {
-// 		display: grid;
-// 		align-items: center;
-// 		justify-content: center;
-// 		gap: 0.5rem;
-
-// 		.icon-container {
-// 			display: grid;
-// 			align-items: center;
-// 			justify-content: center;
-
-// 			.placeholder-icon {
-// 				width: 2rem;
-// 				aspect-ratio: 1;
-// 				border-radius: 100%;
-// 				border: 0.25rem solid var(--text-inactive);
-// 			}
-// 		}
-
-// 		&.active {
-// 			color: var(--text-color);
-
-// 			.icon-container > .placeholder-icon {
-// 				border: 0.25rem solid var(--text-color);
-// 			}
-// 		}
-// 	}
-// }
-
 footer {
 	padding: 1rem 1rem 2rem 1rem;
 	font-size: 0.875rem;
