@@ -1,0 +1,252 @@
+[
+	{
+		"name": "Alice Johnson",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-01", "2025-08-08", "2025-08-15"]
+	},
+	{
+		"name": "Bob Smith",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-20", "2025-08-03"]
+	},
+	{
+		"name": "Charlie K. Daniels",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-02", "2025-08-12"]
+	},
+	{
+		"name": "Diana Lopez",
+		"hangout-goal": 5,
+		"dates-met": ["2025-08-01", "2025-08-06", "2025-08-11", "2025-08-16"]
+	},
+	{
+		"name": "Ethan Miller",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-15", "2025-08-05"]
+	},
+	{
+		"name": "Fiona R. Thompson",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "George Allen",
+		"hangout-goal": 30,
+		"dates-met": ["2025-07-01", "2025-07-31"]
+	},
+	{
+		"name": "Hannah B. White",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-22", "2025-08-05", "2025-08-19"]
+	},
+	{
+		"name": "Ian Cooper",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-04", "2025-08-14"]
+	},
+	{
+		"name": "Julia King",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-02", "2025-08-09", "2025-08-16"]
+	},
+	{
+		"name": "Kevin Martinez",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-18", "2025-08-01", "2025-08-15"]
+	},
+	{
+		"name": "Laura P. Nelson",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "Michael O'Brien",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-12", "2025-08-02"]
+	},
+	{
+		"name": "Nina Patel",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-05", "2025-08-15"]
+	},
+	{
+		"name": "Oliver Quinn",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-01", "2025-08-08", "2025-08-15"]
+	},
+	{
+		"name": "Paula Ramirez",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-20", "2025-08-03"]
+	},
+	{
+		"name": "Quentin S. Brown",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-02", "2025-08-12"]
+	},
+	{
+		"name": "Rachel Thomas",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "Samuel U. Lee",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-15", "2025-08-05"]
+	},
+	{
+		"name": "Tina Walker",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-22", "2025-08-05", "2025-08-19"]
+	},
+	{
+		"name": "Ulysses Young",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-04", "2025-08-14"]
+	},
+	{
+		"name": "Victoria Z. Adams",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-02", "2025-08-09", "2025-08-16"]
+	},
+	{
+		"name": "William Baker",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-18", "2025-08-01", "2025-08-15"]
+	},
+	{
+		"name": "Xavier Clark",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "Yara Diaz",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-12", "2025-08-02"]
+	},
+	{
+		"name": "Zane Edwards",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-05", "2025-08-15"]
+	},
+	{
+		"name": "Amelia Foster",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-01", "2025-08-08", "2025-08-15"]
+	},
+	{
+		"name": "Benjamin Grant",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-20", "2025-08-03"]
+	},
+	{
+		"name": "Catherine H. Hughes",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-02", "2025-08-12"]
+	},
+	{
+		"name": "David Iverson",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "Emma Johnson",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-15", "2025-08-05"]
+	},
+	{
+		"name": "Franklin K. Lewis",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-22", "2025-08-05", "2025-08-19"]
+	},
+	{
+		"name": "Grace Martin",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-04", "2025-08-14"]
+	},
+	{
+		"name": "Henry Nolan",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-02", "2025-08-09", "2025-08-16"]
+	},
+	{
+		"name": "Isabella O. Perez",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-18", "2025-08-01", "2025-08-15"]
+	},
+	{
+		"name": "Jack Quinn",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "Karen Roberts",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-12", "2025-08-02"]
+	},
+	{
+		"name": "Liam Scott",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-05", "2025-08-15"]
+	},
+	{
+		"name": "Mia Turner",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-01", "2025-08-08", "2025-08-15"]
+	},
+	{
+		"name": "Noah Underwood",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-20", "2025-08-03"]
+	},
+	{
+		"name": "Olivia V. White",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-02", "2025-08-12"]
+	},
+	{
+		"name": "Patrick Xavier",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "Quincy Yates",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-15", "2025-08-05"]
+	},
+	{
+		"name": "Rose Zimmerman",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-22", "2025-08-05", "2025-08-19"]
+	},
+	{
+		"name": "Steven Adams",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-04", "2025-08-14"]
+	},
+	{
+		"name": "Theresa Blake",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-02", "2025-08-09", "2025-08-16"]
+	},
+	{
+		"name": "Umar Carter",
+		"hangout-goal": 14,
+		"dates-met": ["2025-07-18", "2025-08-01", "2025-08-15"]
+	},
+	{
+		"name": "Vanessa Davis",
+		"hangout-goal": 7,
+		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
+	},
+	{
+		"name": "William Evans",
+		"hangout-goal": 21,
+		"dates-met": ["2025-07-12", "2025-08-02"]
+	},
+	{
+		"name": "Xena Flores",
+		"hangout-goal": 10,
+		"dates-met": ["2025-08-05", "2025-08-15"]
+	}
+]
