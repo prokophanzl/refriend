@@ -5,12 +5,15 @@
 
 html {
 	--background-color: #000;
+	--main-gradient-1: #000;
+	--main-gradient-2: #040404;
+
 	--text-lite: #b8b8b8;
 	--text-inactive: #777;
 	--text-color: #fff;
 
-	--bubble-background-1: #121212;
-	--bubble-background-2: #1b1b1b;
+	--bubble-background-1: #0a0a0a;
+	--bubble-background-2: #161616;
 
 	--color-valid: #6a994e;
 	--color-invalid: #ca3c25;
@@ -28,9 +31,25 @@ body {
 }
 
 html {
-	font-size: 16px;
 	background-color: var(--background-color);
+}
+
+body {
+	&::before {
+		content: "";
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: -255; /* behind all content */
+		background: linear-gradient(to bottom left, var(--main-gradient-1), var(--main-gradient-2));
+		background-size: cover;
+	}
+
 	color: var(--text-color);
+
+	font-size: 16px;
 	font-family: "Lexend Deca", sans-serif;
 }
 
@@ -88,11 +107,12 @@ main {
 			background: linear-gradient(to bottom right, var(--bubble-background-1), var(--bubble-background-2));
 
 			background-clip: padding-box;
-			border: solid 1px transparent;
+			$borderwidth: 1.5px;
+			border: solid $borderwidth transparent;
 
 			position: relative;
 
-			&:before {
+			&::before {
 				content: "";
 				position: absolute;
 				top: 0;
@@ -100,7 +120,7 @@ main {
 				bottom: 0;
 				left: 0;
 				z-index: -1;
-				margin: -1px;
+				margin: -$borderwidth;
 				border-radius: inherit;
 				background: linear-gradient(to bottom right, var(--bubble-background-2), var(--bubble-background-1));
 			}
@@ -119,6 +139,8 @@ main {
 			.last-seen-container {
 				margin-top: 0.5rem;
 				font-size: 0.85rem;
+
+				font-weight: 350;
 
 				color: var(--text-lite);
 
