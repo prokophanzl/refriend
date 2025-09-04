@@ -1,17 +1,17 @@
 [
 	{
 		"name": "Alice Johnson",
-		"hangout-goal": 7,
+		"hangout-goal": 20,
 		"dates-met": ["2025-08-01", "2025-08-08", "2025-08-15"]
 	},
 	{
 		"name": "Bob Smith",
-		"hangout-goal": 14,
+		"hangout-goal": 140,
 		"dates-met": ["2025-07-20", "2025-08-03"]
 	},
 	{
 		"name": "Charlie K. Daniels",
-		"hangout-goal": 10,
+		"hangout-goal": 22,
 		"dates-met": ["2025-08-02", "2025-08-12"]
 	},
 	{
