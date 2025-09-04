@@ -5,9 +5,14 @@
 		"dates-met": ["2025-08-05", "2025-08-15"]
 	},
 	{
+		"name": "Samuel U. Lee",
+		"hangout-goal": 21,
+		"dates-met": []
+	},
+	{
 		"name": "Oliver Quinn",
 		"hangout-goal": 0,
-		"dates-met": ["2025-08-01", "2025-08-08", "2025-08-15"]
+		"dates-met": []
 	},
 	{
 		"name": "Paula Ramirez",
@@ -23,11 +28,6 @@
 		"name": "Rachel Thomas",
 		"hangout-goal": 100,
 		"dates-met": ["2025-08-03", "2025-08-10", "2025-08-17"]
-	},
-	{
-		"name": "Samuel U. Lee",
-		"hangout-goal": 21,
-		"dates-met": ["2025-07-15", "2025-08-05"]
 	},
 	{
 		"name": "Tina Walker",

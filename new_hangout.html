@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Refriend</title>
+		<link rel="stylesheet" href="assets/css/compiled/style.css" />
+		<link rel="stylesheet" href="assets/css/compiled/new_friend.css" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header>
+			<div class="title-container">
+				<span class="title"><a href="./">Refriend</a></span>
+			</div>
+			<div class="icon-container">
+				<div class="icon account"></div>
+			</div>
+		</header>
+
+		<main>
+			<h2>Who did you see?</h2>
+			<div class="input-container friend-name">
+				<select id="friend-select">
+					<option value="">Select a friend...</option>
+				</select>
+			</div>
+
+			<h2>When did you see them?</h2>
+			<div class="input-container last-met">
+				<input type="date" />
+			</div>
+
+			<div class="button-container">
+				<button onclick="window.location.href='./'">Cancel</button>
+				<button>Log Hangout</button>
+			</div>
+		</main>
+
+		<footer>made with <img src="assets/svg/heart.svg" alt="love" /> by <a href="https://github.com/prokophanzl">ash hanžl</a></footer>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", async () => {
+				const select = document.getElementById("friend-select");
+
+				try {
+					const response = await fetch("assets/json/friends.json");
+					const friends = await response.json();
+
+					// sort names alphabetically
+					friends.sort((a, b) => a.name.localeCompare(b.name));
+
+					// populate dropdown
+					friends.forEach((friend) => {
+						const option = document.createElement("option");
+						option.value = friend.name;
+						option.textContent = friend.name;
+						select.appendChild(option);
+					});
+				} catch (error) {
+					console.error("Error loading friends.json:", error);
+				}
+			});
+		</script>
+	</body>
+</html>

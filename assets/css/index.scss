@@ -1,0 +1,73 @@
+main {
+	#friend-list {
+		display: grid;
+		gap: 1rem;
+
+		.friend-container {
+			padding: 1rem;
+			border-radius: 1.25rem;
+			display: grid;
+			grid-template-columns: auto 1fr;
+			align-items: center;
+			gap: 1rem;
+
+			background: linear-gradient(to bottom right, var(--bubble-background-1), var(--bubble-background-2));
+
+			background-clip: padding-box;
+			$borderwidth: 1.5px;
+			border: solid $borderwidth transparent;
+
+			position: relative;
+
+			&::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				z-index: -1;
+				margin: -$borderwidth;
+				border-radius: inherit;
+				background: linear-gradient(to bottom right, var(--bubble-background-2), var(--bubble-background-1));
+			}
+
+			.friend-icon {
+				width: 4rem;
+				aspect-ratio: 1;
+
+				background-color: var(--text-lite);
+
+				mask: url("../../svg/person.svg");
+				-webkit-mask-box-image: url("../../svg/person.svg");
+
+				mask-repeat: no-repeat;
+			}
+
+			.friend-name-container {
+				font-size: 1.125rem;
+			}
+
+			.last-seen-container {
+				margin-top: 0.5rem;
+				font-size: 0.85rem;
+
+				font-weight: 350;
+
+				color: var(--text-lite);
+
+				.due-today {
+					color: var(--color-attention);
+				}
+
+				.time-left {
+					color: var(--text-inactive);
+				}
+
+				.overdue {
+					color: var(--color-invalid);
+				}
+			}
+		}
+	}
+}

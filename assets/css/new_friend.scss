@@ -1,0 +1,68 @@
+main {
+	h2 {
+		margin-bottom: 1.5rem;
+	}
+
+	.input-container {
+		margin-bottom: 3rem;
+	}
+
+	input {
+		border: none;
+		font-family: inherit;
+		font-size: inherit;
+		background: none;
+		color: inherit;
+		outline: none;
+		border-radius: 0;
+
+		border-bottom: 0.125rem solid var(--text-color);
+	}
+
+	.friend-name input {
+		width: 16rem;
+	}
+
+	.hangout-goal input {
+		width: 4rem;
+	}
+
+	.button-container {
+		display: flex;
+		gap: 1rem;
+
+		button {
+			font-family: "Lexend Deca", sans-serif;
+			font-size: inherit;
+			color: var(--text-color);
+			display: block;
+			flex: 1;
+			cursor: pointer;
+
+			padding: 1rem;
+			border-radius: 1.25rem;
+
+			background: linear-gradient(to bottom right, var(--bubble-background-1), var(--bubble-background-2));
+
+			background-clip: padding-box;
+			$borderwidth: 1.5px;
+			border: solid $borderwidth transparent;
+
+			position: relative;
+			font-weight: 350;
+
+			&::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				z-index: -1;
+				margin: -$borderwidth;
+				border-radius: inherit;
+				background: linear-gradient(to bottom right, var(--bubble-background-2), var(--bubble-background-1));
+			}
+		}
+	}
+}

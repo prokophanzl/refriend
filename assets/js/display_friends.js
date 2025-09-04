@@ -8,57 +8,45 @@ function renderFriends(friends, sort = "longest-overdue") {
 	friends = [...friends]; // copy so we don't mutate original
 	friends.sort((a, b) => {
 		// helper: get last date met
-		const lastDateA = new Date(Math.max(...a["dates-met"].map((d) => new Date(d))));
-		const lastDateB = new Date(Math.max(...b["dates-met"].map((d) => new Date(d))));
+		const lastDateA = a["dates-met"].length > 0 ? new Date(Math.max(...a["dates-met"].map((d) => new Date(d)))) : null;
+		const lastDateB = b["dates-met"].length > 0 ? new Date(Math.max(...b["dates-met"].map((d) => new Date(d)))) : null;
+
+		// alphabetical always first
+		if (sort === "alphabetical") return a.name.localeCompare(b.name);
+
+		// put friends with no hangouts at the bottom
+		if (!lastDateA && lastDateB) return 1;
+		if (lastDateA && !lastDateB) return -1;
+		if (!lastDateA && !lastDateB) return a.name.localeCompare(b.name); // tie-break
 
 		// days since last hangout
+		const today = new Date();
 		const daysAgoA = Math.floor((today - lastDateA) / (1000 * 60 * 60 * 24));
 		const daysAgoB = Math.floor((today - lastDateB) / (1000 * 60 * 60 * 24));
-
-		if (sort === "alphabetical") {
-			return a.name.localeCompare(b.name);
-		}
 
 		if (sort === "longest-overdue" || sort === "most-time-left") {
 			const overdueA = daysAgoA - a["hangout-goal"];
 			const overdueB = daysAgoB - b["hangout-goal"];
 
-			// special handling for hangout-goal = 0
 			const isGoalZeroA = a["hangout-goal"] === 0;
 			const isGoalZeroB = b["hangout-goal"] === 0;
 
 			if (sort === "longest-overdue") {
-				// goal = 0 goes last
 				if (isGoalZeroA && !isGoalZeroB) return 1;
 				if (!isGoalZeroA && isGoalZeroB) return -1;
-
-				// first sort by overdue
 				if (!isGoalZeroA && !isGoalZeroB) {
 					if (overdueB - overdueA !== 0) return overdueB - overdueA;
 				}
-
-				// tie-break: last seen (most recently seen last)
 				if (lastDateA - lastDateB !== 0) return lastDateA - lastDateB;
-
-				// final tie-break: alphabetical
 				return a.name.localeCompare(b.name);
 			} else {
 				// most-time-left
-				// goal = 0 goes first
 				if (isGoalZeroA && !isGoalZeroB) return -1;
 				if (!isGoalZeroA && isGoalZeroB) return 1;
-
-				// first sort by time left (-overdue)
-				if (!isGoalZeroA && !isGoalZeroB) {
-					const leftA = -overdueA;
-					const leftB = -overdueB;
-					if (leftB - leftA !== 0) return leftB - leftA;
-				}
-
-				// tie-break: last seen (most recently seen first)
+				const leftA = -overdueA;
+				const leftB = -overdueB;
+				if (leftB - leftA !== 0) return leftB - leftA;
 				if (lastDateB - lastDateA !== 0) return lastDateB - lastDateA;
-
-				// final tie-break: alphabetical
 				return a.name.localeCompare(b.name);
 			}
 		} else {
@@ -71,9 +59,10 @@ function renderFriends(friends, sort = "longest-overdue") {
 
 	// --- render loop ---
 	friends.forEach((friend) => {
-		const lastDate = new Date(Math.max(...friend["dates-met"].map((d) => new Date(d))));
-		const daysAgo = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
-		const overdueDays = daysAgo - friend["hangout-goal"];
+		const lastDate = friend["dates-met"].length > 0 ? new Date(Math.max(...friend["dates-met"].map((d) => new Date(d)))) : null;
+
+		const daysAgo = lastDate ? Math.floor((today - lastDate) / (1000 * 60 * 60 * 24)) : null;
+		const overdueDays = daysAgo !== null ? daysAgo - friend["hangout-goal"] : null;
 
 		const friendDiv = document.createElement("div");
 		friendDiv.className = "friend-container";
@@ -93,10 +82,16 @@ function renderFriends(friends, sort = "longest-overdue") {
 
 		const lastSeenSpan = document.createElement("span");
 		lastSeenSpan.className = "last-seen";
-		lastSeenSpan.textContent = `${daysAgo} days ago`;
+
+		if (daysAgo !== null) {
+			lastSeenSpan.textContent = `${daysAgo} days ago`;
+		} else {
+			lastSeenSpan.textContent = "no hangouts logged";
+		}
+
 		lastSeenDiv.appendChild(lastSeenSpan);
 
-		if (friend["hangout-goal"] != 0) {
+		if (friend["hangout-goal"] != 0 && overdueDays !== null) {
 			const timeLeftSpan = document.createElement("span");
 			if (overdueDays === 0) {
 				timeLeftSpan.className = "due-today";
