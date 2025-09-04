@@ -1,6 +1,5 @@
 * {
 	box-sizing: border-box;
-	// border: 1px solid red;
 }
 
 html {
@@ -77,7 +76,7 @@ header {
 
 	border-bottom: 0.5px solid var(--header-border);
 
-	display: grid;
+	display: flex;
 	padding: 1rem;
 
 	position: sticky;
@@ -87,11 +86,47 @@ header {
 	.title {
 		font-size: 2rem;
 	}
+
+	.icon-container {
+		flex: 1;
+
+		display: flex;
+		justify-content: end;
+		align-items: center;
+		gap: 1rem;
+		opacity: 0.8;
+
+		.icon {
+			cursor: pointer;
+			width: 2rem;
+			aspect-ratio: 1;
+
+			&.sort {
+				background-image: url("../../svg/sort.svg");
+			}
+
+			&.plus {
+				background-image: url("../../svg/plus.svg");
+			}
+
+			&.new-friend {
+				background-image: url("../../svg/new_friend.svg");
+			}
+
+			&.account {
+				background-image: url("../../svg/person.svg");
+			}
+
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+	}
 }
 
 main {
 	#friend-list {
-		padding: 0.5rem 1rem 1rem 1rem;
+		padding: 1rem;
 
 		display: grid;
 		gap: 1rem;
@@ -126,10 +161,15 @@ main {
 			}
 
 			.friend-icon {
-				width: 3.5rem;
+				width: 4rem;
 				aspect-ratio: 1;
-				border: 0.25rem solid var(--text-lite);
-				border-radius: 50%;
+
+				background-color: var(--text-lite);
+
+				mask: url("../../svg/person.svg");
+				-webkit-mask-box-image: url("../../svg/person.svg");
+
+				mask-repeat: no-repeat;
 			}
 
 			.friend-name-container {
@@ -171,4 +211,81 @@ footer {
 		margin-bottom: 0.125rem;
 		vertical-align: middle;
 	}
+}
+
+#sort-menu {
+	background: linear-gradient(to bottom left, var(--main-gradient-1), var(--main-gradient-2));
+	background-size: cover;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	z-index: 255; // above all content
+
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	justify-content: center;
+
+	padding: 4rem;
+	font-size: 1.25rem;
+
+	.menu-title {
+		font-size: 2.5rem;
+	}
+
+	.option {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+
+		cursor: pointer;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		.radio {
+			width: 1.5rem;
+			aspect-ratio: 1;
+
+			border: 0.185rem solid var(--text-color);
+			border-radius: 50%;
+
+			position: relative;
+
+			&.active::before {
+				content: "";
+				background-color: var(--text-color);
+				height: 0.75rem;
+				aspect-ratio: 1;
+				border-radius: 50%;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+		}
+	}
+}
+
+.floating-icon {
+	cursor: pointer;
+	width: 20rem;
+	aspect-ratio: 1;
+
+	&.new-friend {
+		background-image: url("../../svg/new_friend.svg");
+	}
+
+	&.user {
+		background-image: url("../../svg/user.svg");
+	}
+
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
 }

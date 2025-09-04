@@ -127,9 +127,67 @@ function renderFriends(friends, sort = "longest-overdue") {
 	});
 }
 
+function open_sort_menu() {
+	// remove if already exists
+	const existingMenu = document.getElementById("sort-menu");
+	if (existingMenu) existingMenu.remove();
+
+	// create menu container
+	const menu = document.createElement("div");
+	menu.id = "sort-menu";
+	menu.innerHTML = `
+		<div class="menu-title">Sort Friends</div>
+		<div class="option" data-sort="longest-overdue">
+			<div class="radio ${currentSort === "longest-overdue" ? "active" : ""}"></div>
+			<div class="option-label">Longest Overdue</div>
+		</div>
+		<div class="option" data-sort="most-time-left">
+			<div class="radio ${currentSort === "most-time-left" ? "active" : ""}"></div>
+			<div class="option-label">Most Time Left</div>
+		</div>
+		<div class="option" data-sort="alphabetical">
+			<div class="radio ${currentSort === "alphabetical" ? "active" : ""}"></div>
+			<div class="option-label">Alphabetical</div>
+		</div>
+		<div class="option" data-sort="latest">
+			<div class="radio ${currentSort === "latest" ? "active" : ""}"></div>
+			<div class="option-label">Most Recently Seen</div>
+		</div>
+		<div class="option" data-sort="oldest">
+			<div class="radio ${currentSort === "oldest" ? "active" : ""}"></div>
+			<div class="option-label">Least Recently Seen</div>
+		</div>
+	`;
+
+	// append to body
+	document.body.appendChild(menu);
+
+	// add click listeners
+	menu.querySelectorAll(".option").forEach((option) => {
+		option.addEventListener("click", () => {
+			const sortType = option.getAttribute("data-sort");
+			currentSort = sortType; // update global state
+			localStorage.setItem("preferredSort", sortType); // save preference
+
+			// fetch and render
+			fetch("assets/json/friends.json")
+				.then((response) => response.json())
+				.then((data) => {
+					friends = data;
+					renderFriends(friends, sortType);
+				});
+
+			// remove menu
+			menu.remove();
+		});
+	});
+}
+
+let currentSort = localStorage.getItem("preferredSort") || "longest-overdue";
+
 fetch("assets/json/friends.json")
 	.then((response) => response.json())
 	.then((data) => {
 		friends = data;
-		renderFriends(friends, "longest-overdue");
+		renderFriends(friends, currentSort);
 	});
