@@ -1,4 +1,4 @@
-function renderFriends(friends, sort = "latest") {
+function renderFriends(friends, sort = "longest-overdue") {
 	const container = document.getElementById("friend-list");
 	container.innerHTML = ""; // clear previous entries
 
@@ -6,53 +6,75 @@ function renderFriends(friends, sort = "latest") {
 
 	// --- sorting logic ---
 	friends = [...friends]; // copy so we don't mutate original
-	if (sort === "alphabetical") {
-		friends.sort((a, b) => a.name.localeCompare(b.name));
-	} else if (sort === "longest-overdue" || sort === "most-time-left") {
-		friends.sort((a, b) => {
-			const lastDateA = new Date(Math.max(...a["dates-met"].map((d) => new Date(d))));
-			const lastDateB = new Date(Math.max(...b["dates-met"].map((d) => new Date(d))));
+	friends.sort((a, b) => {
+		// helper: get last date met
+		const lastDateA = new Date(Math.max(...a["dates-met"].map((d) => new Date(d))));
+		const lastDateB = new Date(Math.max(...b["dates-met"].map((d) => new Date(d))));
 
-			const daysAgoA = Math.floor((today - lastDateA) / (1000 * 60 * 60 * 24));
-			const daysAgoB = Math.floor((today - lastDateB) / (1000 * 60 * 60 * 24));
+		// days since last hangout
+		const daysAgoA = Math.floor((today - lastDateA) / (1000 * 60 * 60 * 24));
+		const daysAgoB = Math.floor((today - lastDateB) / (1000 * 60 * 60 * 24));
 
+		if (sort === "alphabetical") {
+			return a.name.localeCompare(b.name);
+		}
+
+		if (sort === "longest-overdue" || sort === "most-time-left") {
 			const overdueA = daysAgoA - a["hangout-goal"];
 			const overdueB = daysAgoB - b["hangout-goal"];
 
+			// special handling for hangout-goal = 0
+			const isGoalZeroA = a["hangout-goal"] === 0;
+			const isGoalZeroB = b["hangout-goal"] === 0;
+
 			if (sort === "longest-overdue") {
-				// larger overdue first
-				return overdueB - overdueA;
+				// goal = 0 goes last
+				if (isGoalZeroA && !isGoalZeroB) return 1;
+				if (!isGoalZeroA && isGoalZeroB) return -1;
+
+				// first sort by overdue
+				if (!isGoalZeroA && !isGoalZeroB) {
+					if (overdueB - overdueA !== 0) return overdueB - overdueA;
+				}
+
+				// tie-break: last seen (most recently seen last)
+				if (lastDateA - lastDateB !== 0) return lastDateA - lastDateB;
+
+				// final tie-break: alphabetical
+				return a.name.localeCompare(b.name);
 			} else {
-				// most days left first
-				const leftA = -overdueA; // positive if still time left
-				const leftB = -overdueB;
-				return leftB - leftA;
+				// most-time-left
+				// goal = 0 goes first
+				if (isGoalZeroA && !isGoalZeroB) return -1;
+				if (!isGoalZeroA && isGoalZeroB) return 1;
+
+				// first sort by time left (-overdue)
+				if (!isGoalZeroA && !isGoalZeroB) {
+					const leftA = -overdueA;
+					const leftB = -overdueB;
+					if (leftB - leftA !== 0) return leftB - leftA;
+				}
+
+				// tie-break: last seen (most recently seen first)
+				if (lastDateB - lastDateA !== 0) return lastDateB - lastDateA;
+
+				// final tie-break: alphabetical
+				return a.name.localeCompare(b.name);
 			}
-		});
-	} else {
-		// both "latest" and "oldest" need lastDate
-		friends.sort((a, b) => {
-			const lastDateA = new Date(Math.max(...a["dates-met"].map((d) => new Date(d))));
-			const lastDateB = new Date(Math.max(...b["dates-met"].map((d) => new Date(d))));
-			return sort === "latest"
-				? lastDateB - lastDateA // newest first
-				: lastDateA - lastDateB; // oldest first
-		});
-	}
+		} else {
+			// latest / oldest
+			const cmp = sort === "latest" ? lastDateB - lastDateA : lastDateA - lastDateB;
+			if (cmp !== 0) return cmp;
+			return a.name.localeCompare(b.name);
+		}
+	});
 
 	// --- render loop ---
 	friends.forEach((friend) => {
-		// get last date met (latest date in array)
 		const lastDate = new Date(Math.max(...friend["dates-met"].map((d) => new Date(d))));
-
-		// calculate days since last hangout
-		const diffMs = today - lastDate;
-		const daysAgo = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-		// check if overdue
+		const daysAgo = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
 		const overdueDays = daysAgo - friend["hangout-goal"];
 
-		// build DOM structure
 		const friendDiv = document.createElement("div");
 		friendDiv.className = "friend-container";
 
@@ -72,30 +94,28 @@ function renderFriends(friends, sort = "latest") {
 		const lastSeenSpan = document.createElement("span");
 		lastSeenSpan.className = "last-seen";
 		lastSeenSpan.textContent = `${daysAgo} days ago`;
-
 		lastSeenDiv.appendChild(lastSeenSpan);
 
-		// show time left/overdue info
-		const timeLeftSpan = document.createElement("span");
-
-		if (overdueDays === 0) {
-			timeLeftSpan.className = "due-today";
-			timeLeftSpan.textContent = " (due today)";
-		} else if (overdueDays === -1) {
-			timeLeftSpan.className = "time-left";
-			timeLeftSpan.textContent = " (1 day left)";
-		} else if (overdueDays === 1) {
-			timeLeftSpan.className = "overdue";
-			timeLeftSpan.textContent = " (1 day overdue)";
-		} else if (overdueDays < 0) {
-			timeLeftSpan.className = "time-left";
-			timeLeftSpan.textContent = ` (${-overdueDays} days left)`;
-		} else if (overdueDays > 1) {
-			timeLeftSpan.className = "overdue";
-			timeLeftSpan.textContent = ` (${overdueDays} days overdue)`;
+		if (friend["hangout-goal"] != 0) {
+			const timeLeftSpan = document.createElement("span");
+			if (overdueDays === 0) {
+				timeLeftSpan.className = "due-today";
+				timeLeftSpan.textContent = " (due today)";
+			} else if (overdueDays === -1) {
+				timeLeftSpan.className = "time-left";
+				timeLeftSpan.textContent = " (1 day left)";
+			} else if (overdueDays === 1) {
+				timeLeftSpan.className = "overdue";
+				timeLeftSpan.textContent = " (1 day overdue)";
+			} else if (overdueDays < 0) {
+				timeLeftSpan.className = "time-left";
+				timeLeftSpan.textContent = ` (${-overdueDays} days left)`;
+			} else if (overdueDays > 1) {
+				timeLeftSpan.className = "overdue";
+				timeLeftSpan.textContent = ` (${overdueDays} days overdue)`;
+			}
+			lastSeenDiv.appendChild(timeLeftSpan);
 		}
-
-		lastSeenDiv.appendChild(timeLeftSpan);
 
 		infoDiv.appendChild(nameDiv);
 		infoDiv.appendChild(lastSeenDiv);
