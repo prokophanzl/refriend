@@ -155,7 +155,8 @@ footer {
 	}
 }
 
-#sort-menu {
+#sort-menu,
+#account-menu {
 	background: linear-gradient(to bottom left, var(--main-gradient-1), var(--main-gradient-2));
 	background-size: cover;
 
@@ -175,8 +176,25 @@ footer {
 	padding: 4rem;
 	font-size: 1.25rem;
 
+	.back-icon {
+		width: 3rem;
+		aspect-ratio: 1;
+		background-image: url("../../svg/arrow-left.svg");
+		background-size: contain;
+		background-position: center;
+		background-repeat: no-repeat;
+		cursor: pointer;
+		opacity: 0.75;
+	}
+
 	.menu-title {
 		font-size: 2.5rem;
+
+		.menu-subtitle {
+			opacity: 0.75;
+			margin-top: 0.5rem;
+			font-size: 1.25rem;
+		}
 	}
 
 	.option {
