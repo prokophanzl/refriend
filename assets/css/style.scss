@@ -176,10 +176,15 @@ main {
 }
 
 footer {
-	padding: 1rem 1rem 2rem 1rem;
+	padding: 1rem 2rem 2rem 2rem;
 	font-size: 0.875rem;
 	opacity: 50%;
 	text-align: center;
+
+	hr {
+		opacity: 1;
+		margin-bottom: 1rem;
+	}
 
 	img {
 		height: 1em;
