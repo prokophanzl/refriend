@@ -24,7 +24,7 @@
 				<span class="title"><a href="./">Refriend</a></span>
 			</div>
 			<div class="icon-container">
-				<div class="icon account" onclick="open_account_menu()"></div>
+				<div class="icon account" id="account-button"></div>
 			</div>
 		</header>
 
@@ -49,29 +49,66 @@
 
 		<footer>made with <img src="assets/svg/heart.svg" alt="love" /> by <a href="https://github.com/prokophanzl">ash hanžl</a></footer>
 
+		<script type="module" src="assets/js/supabaseClient.js"></script>
+		<script type="module" src="assets/js/auth.js"></script>
+
+		<script type="module">
+			import { requireAuth } from "./assets/js/auth.js";
+
+			await requireAuth();
+		</script>
+
 		<script>
+			// new_hangout.js
 			document.addEventListener("DOMContentLoaded", async () => {
+				const { data: userData } = await window.supabase.auth.getUser();
+				const user = userData?.user;
+				if (!user) return (window.location.href = "/login.html");
+
 				const select = document.getElementById("friend-select");
+				const dateInput = document.querySelector('.input-container.last-met input[type="date"]');
+				const addBtn = document.querySelector(".button-container button:last-child");
+				const cancelBtn = document.querySelector(".button-container button:first-child");
 
-				try {
-					const response = await fetch("assets/json/friends.json");
-					const friends = await response.json();
+				// fetch friends
+				const { data: friends, error } = await window.supabase
+					.from("friends")
+					.select("id,name")
+					.eq("user_id", user.id)
+					.order("name", { ascending: true });
 
-					// sort names alphabetically
-					friends.sort((a, b) => a.name.localeCompare(b.name));
-
-					// populate dropdown
-					friends.forEach((friend) => {
-						const option = document.createElement("option");
-						option.value = friend.name;
-						option.textContent = friend.name;
-						select.appendChild(option);
-					});
-				} catch (error) {
-					console.error("Error loading friends.json:", error);
+				if (error) {
+					console.error(error);
+					return (select.innerHTML = '<option value="">Error loading friends</option>');
 				}
+
+				friends.forEach((f) => {
+					const opt = document.createElement("option");
+					opt.value = f.id;
+					opt.textContent = f.name;
+					select.appendChild(opt);
+				});
+
+				cancelBtn.addEventListener("click", () => (window.location.href = "/"));
+
+				addBtn.addEventListener("click", async (ev) => {
+					ev.preventDefault();
+					const friendId = select.value;
+					const date = dateInput.value;
+					if (!friendId || !date) return alert("Pick friend and date");
+
+					const { error: insErr } = await window.supabase.from("hangouts").insert([{ user_id: user.id, friend_id: friendId, date }]);
+
+					if (insErr) {
+						console.error(insErr);
+						return alert("Failed to log hangout");
+					}
+
+					window.location.href = `/friend.html?id=${friendId}`;
+				});
 			});
 		</script>
-		<script src="assets/js/account_menu.js"></script>
+
+		<script type="module" src="assets/js/account_menu.js"></script>
 	</body>
 </html>

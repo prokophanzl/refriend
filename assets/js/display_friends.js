@@ -1,135 +1,184 @@
-function renderFriends(friends, sort = "longest-overdue") {
-	const container = document.getElementById("friend-list");
-	container.innerHTML = ""; // clear previous entries
+// display_friends.js
+// This script expects window.supabase to exist (loaded from supabaseClient.js)
+let currentSort = localStorage.getItem("preferredSort") || "longest-overdue";
 
+function daysBetween(dateString) {
+	const d = new Date(dateString + "T00:00:00"); // safe date arithmetic
 	const today = new Date();
+	const diffMs = today - d;
+	return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+}
 
-	// --- sorting logic ---
-	friends = [...friends]; // copy so we don't mutate original
-	friends.sort((a, b) => {
-		// pinned friends always first
+function createFriendRow(friend, lastDateStr, overdueDays) {
+	const friendDiv = document.createElement("div");
+	friendDiv.className = "friend-container";
+	friendDiv.style.cursor = "pointer";
+	friendDiv.onclick = () => {
+		window.location.href = `friend.html?id=${friend.id}`;
+	};
+
+	if (friend.pinned) {
+		const pinDiv = document.createElement("div");
+		pinDiv.className = "pin-icon";
+		friendDiv.appendChild(pinDiv);
+	}
+
+	const iconDiv = document.createElement("div");
+	iconDiv.className = "friend-icon";
+	if (friend.avatar_url) {
+		iconDiv.style.backgroundImage = `url(${friend.avatar_url})`;
+		iconDiv.style.backgroundSize = "cover";
+		iconDiv.style.backgroundPosition = "center";
+	}
+	const infoDiv = document.createElement("div");
+	infoDiv.className = "friend-info";
+
+	const nameDiv = document.createElement("div");
+	nameDiv.className = "friend-name-container";
+	nameDiv.textContent = friend.name;
+
+	const lastSeenDiv = document.createElement("div");
+	lastSeenDiv.className = "last-seen-container";
+	const lastSeenSpan = document.createElement("span");
+	lastSeenSpan.className = "last-seen";
+
+	if (lastDateStr) {
+		const daysAgo = daysBetween(lastDateStr);
+		lastSeenSpan.textContent = `${daysAgo} days ago`;
+	} else {
+		lastSeenSpan.textContent = "no hangouts logged";
+	}
+	lastSeenDiv.appendChild(lastSeenSpan);
+
+	if (friend.hangout_goal && lastDateStr) {
+		const daysAgo = daysBetween(lastDateStr);
+		const overdue = daysAgo - (friend.hangout_goal || 0);
+		const timeLeftSpan = document.createElement("span");
+
+		if (overdue === 0) {
+			timeLeftSpan.className = "due-today";
+			timeLeftSpan.textContent = " (due today)";
+		} else if (overdue === -1) {
+			timeLeftSpan.className = "time-left";
+			timeLeftSpan.textContent = " (1 day left)";
+		} else if (overdue === 1) {
+			timeLeftSpan.className = "overdue";
+			timeLeftSpan.textContent = " (1 day overdue)";
+		} else if (overdue < 0) {
+			timeLeftSpan.className = "time-left";
+			timeLeftSpan.textContent = ` (${Math.abs(overdue)} days left)`;
+		} else {
+			timeLeftSpan.className = "overdue";
+			timeLeftSpan.textContent = ` (${overdue} days overdue)`;
+		}
+		lastSeenDiv.appendChild(timeLeftSpan);
+	}
+
+	infoDiv.appendChild(nameDiv);
+	infoDiv.appendChild(lastSeenDiv);
+
+	friendDiv.appendChild(iconDiv);
+	friendDiv.appendChild(infoDiv);
+
+	return friendDiv;
+}
+
+export async function loadAndRenderFriends(sort = null) {
+	const sortToUse = sort || currentSort;
+	const container = document.getElementById("friend-list");
+	container.innerHTML = "";
+
+	// ensure auth
+	const { data: userData } = await window.supabase.auth.getUser();
+	const user = userData?.user ?? null;
+	if (!user) {
+		window.location.href = "/login.html";
+		return;
+	}
+
+	// fetch friends + hangouts in two queries (efficient)
+	const { data: friends, error: fErr } = await window.supabase.from("friends").select("*").eq("user_id", user.id);
+
+	if (fErr) {
+		console.error("Error loading friends", fErr);
+		container.textContent = "Error loading friends.";
+		return;
+	}
+
+	const { data: hangouts, error: hErr } = await window.supabase
+		.from("hangouts")
+		.select("*")
+		.eq("user_id", user.id)
+		.order("date", { ascending: false });
+
+	if (hErr) {
+		console.error("Error loading hangouts", hErr);
+	}
+
+	const hangoutsByFriend = {};
+	(hangouts || []).forEach((h) => {
+		hangoutsByFriend[h.friend_id] = hangoutsByFriend[h.friend_id] || [];
+		hangoutsByFriend[h.friend_id].push(h.date);
+	});
+
+	// augment friends with lastDate
+	const augmented = (friends || []).map((f) => {
+		const dates = hangoutsByFriend[f.id] || [];
+		return {
+			...f,
+			dates_met: dates, // convenience
+			last_met: dates.length > 0 ? dates[0] : null,
+		};
+	});
+
+	// sorting (you can tweak or reuse your original logic)
+	augmented.sort((a, b) => {
+		// pinned first
 		if (a.pinned && !b.pinned) return -1;
 		if (!a.pinned && b.pinned) return 1;
 
-		// helper: get last date met
-		const lastDateA = a["dates-met"].length > 0 ? new Date(Math.max(...a["dates-met"].map((d) => new Date(d)))) : null;
-		const lastDateB = b["dates-met"].length > 0 ? new Date(Math.max(...b["dates-met"].map((d) => new Date(d)))) : null;
-
-		// alphabetical always first
-		if (sort === "alphabetical") return a.name.localeCompare(b.name);
-
-		// put friends with no hangouts at the bottom
-		if (!lastDateA && lastDateB) return 1;
-		if (lastDateA && !lastDateB) return -1;
-		if (!lastDateA && !lastDateB) return a.name.localeCompare(b.name); // tie-break
+		// no hangouts go bottom
+		if (!a.last_met && b.last_met) return 1;
+		if (a.last_met && !b.last_met) return -1;
+		if (!a.last_met && !b.last_met) return a.name.localeCompare(b.name);
 
 		// days since last hangout
-		const today = new Date();
-		const daysAgoA = Math.floor((today - lastDateA) / (1000 * 60 * 60 * 24));
-		const daysAgoB = Math.floor((today - lastDateB) / (1000 * 60 * 60 * 24));
+		const daysA = daysBetween(a.last_met);
+		const daysB = daysBetween(b.last_met);
 
-		if (sort === "longest-overdue" || sort === "most-time-left") {
-			const overdueA = daysAgoA - a["hangout-goal"];
-			const overdueB = daysAgoB - b["hangout-goal"];
+		if (sortToUse === "alphabetical") return a.name.localeCompare(b.name);
+		if (sortToUse === "latest") return daysA - daysB; // smaller daysAgo = newer => show first
+		if (sortToUse === "oldest") return daysB - daysA;
 
-			const isGoalZeroA = a["hangout-goal"] === 0;
-			const isGoalZeroB = b["hangout-goal"] === 0;
+		// overdue-related sorts
+		const overdueA = daysA - (a.hangout_goal || 0);
+		const overdueB = daysB - (b.hangout_goal || 0);
 
-			if (sort === "longest-overdue") {
-				if (isGoalZeroA && !isGoalZeroB) return 1;
-				if (!isGoalZeroA && isGoalZeroB) return -1;
-				if (!isGoalZeroA && !isGoalZeroB) {
-					if (overdueB - overdueA !== 0) return overdueB - overdueA;
-				}
-				if (lastDateA - lastDateB !== 0) return lastDateA - lastDateB;
-				return a.name.localeCompare(b.name);
-			} else {
-				// most-time-left
-				if (isGoalZeroA && !isGoalZeroB) return -1;
-				if (!isGoalZeroA && isGoalZeroB) return 1;
-				const leftA = -overdueA;
-				const leftB = -overdueB;
-				if (leftB - leftA !== 0) return leftB - leftA;
-				if (lastDateB - lastDateA !== 0) return lastDateB - lastDateA;
-				return a.name.localeCompare(b.name);
-			}
-		} else {
-			// latest / oldest
-			const cmp = sort === "latest" ? lastDateB - lastDateA : lastDateA - lastDateB;
-			if (cmp !== 0) return cmp;
+		if (sortToUse === "longest-overdue") {
+			// put most overdue first
+			if ((a.hangout_goal || 0) === 0 && (b.hangout_goal || 0) !== 0) return 1;
+			if ((a.hangout_goal || 0) !== 0 && (b.hangout_goal || 0) === 0) return -1;
+			if (overdueB !== overdueA) return overdueB - overdueA;
 			return a.name.localeCompare(b.name);
 		}
+
+		if (sortToUse === "most-time-left") {
+			if ((a.hangout_goal || 0) === 0 && (b.hangout_goal || 0) !== 0) return -1;
+			if ((a.hangout_goal || 0) !== 0 && (b.hangout_goal || 0) === 0) return 1;
+			const leftA = -overdueA,
+				leftB = -overdueB;
+			if (leftB - leftA !== 0) return leftB - leftA;
+			return a.name.localeCompare(b.name);
+		}
+
+		return a.name.localeCompare(b.name);
 	});
 
-	// --- render loop ---
-	friends.forEach((friend) => {
-		const lastDate = friend["dates-met"].length > 0 ? new Date(Math.max(...friend["dates-met"].map((d) => new Date(d)))) : null;
-
-		const daysAgo = lastDate ? Math.floor((today - lastDate) / (1000 * 60 * 60 * 24)) : null;
-		const overdueDays = daysAgo !== null ? daysAgo - friend["hangout-goal"] : null;
-
-		const friendDiv = document.createElement("div");
-		friendDiv.className = "friend-container";
-
-		// --- pin icon ---
-		if (friend.pinned) {
-			const pinDiv = document.createElement("div");
-			pinDiv.className = "pin-icon";
-			friendDiv.appendChild(pinDiv);
-		}
-
-		const iconDiv = document.createElement("div");
-		iconDiv.className = "friend-icon";
-
-		const infoDiv = document.createElement("div");
-		infoDiv.className = "friend-info";
-
-		const nameDiv = document.createElement("div");
-		nameDiv.className = "friend-name-container";
-		nameDiv.textContent = friend.name;
-
-		const lastSeenDiv = document.createElement("div");
-		lastSeenDiv.className = "last-seen-container";
-
-		const lastSeenSpan = document.createElement("span");
-		lastSeenSpan.className = "last-seen";
-
-		if (daysAgo !== null) {
-			lastSeenSpan.textContent = `${daysAgo} days ago`;
-		} else {
-			lastSeenSpan.textContent = "no hangouts logged";
-		}
-
-		lastSeenDiv.appendChild(lastSeenSpan);
-
-		if (friend["hangout-goal"] != 0 && overdueDays !== null) {
-			const timeLeftSpan = document.createElement("span");
-			if (overdueDays === 0) {
-				timeLeftSpan.className = "due-today";
-				timeLeftSpan.textContent = " (due today)";
-			} else if (overdueDays === -1) {
-				timeLeftSpan.className = "time-left";
-				timeLeftSpan.textContent = " (1 day left)";
-			} else if (overdueDays === 1) {
-				timeLeftSpan.className = "overdue";
-				timeLeftSpan.textContent = " (1 day overdue)";
-			} else if (overdueDays < 0) {
-				timeLeftSpan.className = "time-left";
-				timeLeftSpan.textContent = ` (${-overdueDays} days left)`;
-			} else if (overdueDays > 1) {
-				timeLeftSpan.className = "overdue";
-				timeLeftSpan.textContent = ` (${overdueDays} days overdue)`;
-			}
-			lastSeenDiv.appendChild(timeLeftSpan);
-		}
-
-		infoDiv.appendChild(nameDiv);
-		infoDiv.appendChild(lastSeenDiv);
-
-		friendDiv.appendChild(iconDiv);
-		friendDiv.appendChild(infoDiv);
-
-		container.appendChild(friendDiv);
+	// render
+	augmented.forEach((friend) => {
+		const lastDate = friend.last_met;
+		const elem = createFriendRow(friend, lastDate);
+		container.appendChild(elem);
 	});
 }
 
@@ -138,71 +187,57 @@ function open_sort_menu() {
 	const existingMenu = document.getElementById("sort-menu");
 	if (existingMenu) existingMenu.remove();
 
-	// create menu container
 	const menu = document.createElement("div");
 	menu.id = "sort-menu";
 	menu.innerHTML = `
-		<div class="back-icon"></div>
-		<div class="menu-title">Sort Friends</div>
-		<div class="option" data-sort="longest-overdue">
-			<div class="radio ${currentSort === "longest-overdue" ? "active" : ""}"></div>
-			<div class="option-label">Longest Overdue</div>
-		</div>
-		<div class="option" data-sort="most-time-left">
-			<div class="radio ${currentSort === "most-time-left" ? "active" : ""}"></div>
-			<div class="option-label">Most Time Left</div>
-		</div>
-		<div class="option" data-sort="alphabetical">
-			<div class="radio ${currentSort === "alphabetical" ? "active" : ""}"></div>
-			<div class="option-label">Alphabetical</div>
-		</div>
-		<div class="option" data-sort="latest">
-			<div class="radio ${currentSort === "latest" ? "active" : ""}"></div>
-			<div class="option-label">Most Recently Seen</div>
-		</div>
-		<div class="option" data-sort="oldest">
-			<div class="radio ${currentSort === "oldest" ? "active" : ""}"></div>
-			<div class="option-label">Least Recently Seen</div>
-		</div>
-	`;
+        <div class="back-icon"></div>
+        <div class="menu-title">Sort Friends</div>
+        <div class="option" data-sort="longest-overdue">
+            <div class="radio ${currentSort === "longest-overdue" ? "active" : ""}"></div>
+            <div class="option-label">Longest Overdue</div>
+        </div>
+        <div class="option" data-sort="most-time-left">
+            <div class="radio ${currentSort === "most-time-left" ? "active" : ""}"></div>
+            <div class="option-label">Most Time Left</div>
+        </div>
+        <div class="option" data-sort="alphabetical">
+            <div class="radio ${currentSort === "alphabetical" ? "active" : ""}"></div>
+            <div class="option-label">Alphabetical</div>
+        </div>
+        <div class="option" data-sort="latest">
+            <div class="radio ${currentSort === "latest" ? "active" : ""}"></div>
+            <div class="option-label">Most Recently Seen</div>
+        </div>
+        <div class="option" data-sort="oldest">
+            <div class="radio ${currentSort === "oldest" ? "active" : ""}"></div>
+            <div class="option-label">Least Recently Seen</div>
+        </div>
+    `;
 
-	// append to body
 	document.body.appendChild(menu);
 
-	// add click listeners
+	// click listeners for options
 	menu.querySelectorAll(".option").forEach((option) => {
 		option.addEventListener("click", () => {
 			const sortType = option.getAttribute("data-sort");
-			currentSort = sortType; // update global state
-			localStorage.setItem("preferredSort", sortType); // save preference
+			currentSort = sortType;
+			localStorage.setItem("preferredSort", sortType);
 
-			// fetch and render
-			fetch("assets/json/friends.json")
-				.then((response) => response.json())
-				.then((data) => {
-					friends = data;
-					renderFriends(friends, sortType);
-				});
-
-			// remove menu
+			loadAndRenderFriends(sortType);
 			menu.remove();
 		});
 	});
 
-	// add click listener for back-icon to just close menu
+	// back-icon closes menu
 	const backIcon = menu.querySelector(".back-icon");
 	if (backIcon) {
-		backIcon.addEventListener("click", () => {
-			menu.remove();
-		});
+		backIcon.addEventListener("click", () => menu.remove());
 	}
 }
 
-let currentSort = localStorage.getItem("preferredSort") || "longest-overdue";
+document.addEventListener("DOMContentLoaded", () => {
+	loadAndRenderFriends();
 
-fetch("assets/json/friends.json")
-	.then((response) => response.json())
-	.then((data) => {
-		friends = data;
-		renderFriends(friends, currentSort);
-	});
+	const sortBtn = document.getElementById("sort-button");
+	if (sortBtn) sortBtn.addEventListener("click", open_sort_menu);
+});

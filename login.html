@@ -25,17 +25,28 @@
 			</div>
 		</header>
 
+		<!-- (keep your existing <head> but replace main content) -->
 		<main>
 			<div class="center-container">
-				<h3>To use Refriend, you need to sign in with your Google account.</h3>
+				<h3>Sign in to Refriend</h3>
 
-				<button id="sign-in">Sign in with Google</button>
+				<div class="auth-card">
+					<label>Email</label>
+					<input id="email" type="email" />
+					<label>Password</label>
+					<input id="password" type="password" />
+					<div class="auth-buttons">
+						<button id="sign-in">Sign in</button>
+						<button id="sign-up">Create account</button>
+					</div>
+					<div id="auth-message"></div>
+				</div>
 			</div>
 		</main>
 
-		<footer>
-			<hr />
-			made with <img src="assets/svg/heart.svg" alt="love" /> by <a href="https://github.com/prokophanzl">ash hanžl</a>
-		</footer>
+		<script type="module" src="assets/js/supabaseClient.js"></script>
+
+		<script type="module" src="assets/js/login.js"></script>
+		<script type="module" src="assets/js/auth.js"></script>
 	</body>
 </html>

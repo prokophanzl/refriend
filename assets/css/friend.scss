@@ -178,10 +178,26 @@ main {
 
 			.past-hangouts {
 				.hangout-container {
-					padding-top: 1rem;
+					padding: 1rem 0;
 					display: grid;
 					gap: 0.5rem;
 					color: var(--text-lite);
+				}
+			}
+
+			.remove-friend {
+				margin-top: 0.5rem;
+				opacity: 0.875;
+				color: var(--color-invalid);
+
+				.delete-icon {
+					left: 0;
+					background-color: var(--color-invalid);
+				}
+
+				h2 {
+					margin-left: 2rem;
+					font-size: 1.25rem;
 				}
 			}
 		}

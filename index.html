@@ -23,10 +23,10 @@
 				<span class="title"><a href="./">Refriend</a></span>
 			</div>
 			<div class="icon-container">
-				<div class="icon sort" onclick="open_sort_menu()"></div>
+				<div class="icon sort" id="sort-button"></div>
 				<div class="icon plus" onclick="window.location.href = 'new_hangout.html'"></div>
 				<div class="icon new-friend" onclick="window.location.href = 'new_friend.html'"></div>
-				<div class="icon account" onclick="open_account_menu()"></div>
+				<div class="icon account" id="account-button"></div>
 			</div>
 		</header>
 
@@ -38,7 +38,16 @@
 
 		<footer>made with <img src="assets/svg/heart.svg" alt="love" /> by <a href="https://github.com/prokophanzl">ash hanžl</a></footer>
 
-		<script src="assets/js/display_friends.js"></script>
-		<script src="assets/js/account_menu.js"></script>
+		<script type="module" src="assets/js/supabaseClient.js"></script>
+		<script type="module" src="assets/js/auth.js"></script>
+
+		<script type="module">
+			import { requireAuth } from "./assets/js/auth.js";
+
+			await requireAuth();
+		</script>
+
+		<script type="module" src="assets/js/display_friends.js"></script>
+		<script type="module" src="assets/js/account_menu.js"></script>
 	</body>
 </html>
