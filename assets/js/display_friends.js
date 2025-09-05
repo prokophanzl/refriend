@@ -7,6 +7,10 @@ function renderFriends(friends, sort = "longest-overdue") {
 	// --- sorting logic ---
 	friends = [...friends]; // copy so we don't mutate original
 	friends.sort((a, b) => {
+		// pinned friends always first
+		if (a.pinned && !b.pinned) return -1;
+		if (!a.pinned && b.pinned) return 1;
+
 		// helper: get last date met
 		const lastDateA = a["dates-met"].length > 0 ? new Date(Math.max(...a["dates-met"].map((d) => new Date(d)))) : null;
 		const lastDateB = b["dates-met"].length > 0 ? new Date(Math.max(...b["dates-met"].map((d) => new Date(d)))) : null;
@@ -66,6 +70,13 @@ function renderFriends(friends, sort = "longest-overdue") {
 
 		const friendDiv = document.createElement("div");
 		friendDiv.className = "friend-container";
+
+		// --- pin icon ---
+		if (friend.pinned) {
+			const pinDiv = document.createElement("div");
+			pinDiv.className = "pin-icon";
+			friendDiv.appendChild(pinDiv);
+		}
 
 		const iconDiv = document.createElement("div");
 		iconDiv.className = "friend-icon";

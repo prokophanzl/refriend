@@ -32,6 +32,23 @@ main {
 				background: linear-gradient(to bottom right, var(--bubble-background-2), var(--bubble-background-1));
 			}
 
+			.pin-icon {
+				width: 1.5rem;
+				aspect-ratio: 1;
+
+				background-color: var(--text-lite);
+
+				mask: url("../../svg/pin.svg");
+				-webkit-mask-box-image: url("../../svg/pin.svg");
+
+				mask-repeat: no-repeat;
+
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				right: 1.5rem;
+			}
+
 			.friend-icon {
 				width: 4rem;
 				aspect-ratio: 1;
