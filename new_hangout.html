@@ -3,6 +3,12 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- favicon -->
+		<link rel="apple-touch-icon" href="assets/png/icon.png" />
+		<link rel="icon" type="image/png" href="assets/png/icon.png" />
+		<link rel="icon" type="image/png" href="assets/png/icon.png" />
+
 		<title>Refriend</title>
 		<link rel="stylesheet" href="assets/css/compiled/style.css" />
 		<link rel="stylesheet" href="assets/css/compiled/new_friend.css" />
@@ -18,7 +24,7 @@
 				<span class="title"><a href="./">Refriend</a></span>
 			</div>
 			<div class="icon-container">
-				<div class="icon account"></div>
+				<div class="icon account" onclick="open_account_menu()"></div>
 			</div>
 		</header>
 
@@ -66,5 +72,6 @@
 				}
 			});
 		</script>
+		<script src="assets/js/account_menu.js"></script>
 	</body>
 </html>
