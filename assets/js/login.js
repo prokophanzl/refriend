@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (userId) {
 				await window.supabase.from("profiles").upsert({ id: userId, full_name: null });
 			}
-			msg.textContent = "Check your email to confirm signup (if email confirmation is required).";
+			msg.textContent = "Check your email to verify your account.";
 		}
 	});
 
