@@ -24,6 +24,12 @@ async function open_account_menu() {
     <div class="option" onclick="window.location.href = 'change_name.html'">
       <div class="option-label">Change Name</div>
     </div>
+    <div class="option" id="change-password-option">
+      <div class="option-label">Change Password</div>
+    </div>
+    <div class="option" id="delete-account-option">
+      <div class="option-label">Delete Account</div>
+    </div>
     <div class="option" id="sign-out-option">
       <div class="option-label">Sign Out</div>
     </div>
